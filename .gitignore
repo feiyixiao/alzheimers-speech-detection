@@ -1,0 +1,10 @@
+data/adress/
+data/demo/audio/
+__pycache__/
+*.pyc
+.DS_Store
+*.pth
+*.pkl
+results/*.csv
+results/*.png
+.ipynb_checkpoints/

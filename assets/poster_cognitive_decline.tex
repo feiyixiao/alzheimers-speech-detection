@@ -1,0 +1,488 @@
+% ============================================================
+% Academic Poster: Automated Screening for Cognitive Decline
+% Author: Feixiang Xiao
+% Course: Introduction to Deep Learning — Bonus Seminar
+% University of Stuttgart, 2025
+% Requires: beamerposter, tikz, booktabs, multicol, colortbl
+% Compile: pdflatex poster_cognitive_decline.tex (run twice)
+% ============================================================
+
+\documentclass[final]{beamer}
+
+\usepackage[size=a0,orientation=portrait,scale=1.35]{beamerposter}
+\usepackage{graphicx}
+\usepackage{booktabs}
+\usepackage{array}
+\usepackage{tikz}
+\usetikzlibrary{arrows.meta,positioning,shapes.geometric,fit,backgrounds}
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage{lmodern}
+\usepackage{microtype}
+\usepackage{amsmath}
+\usepackage{xcolor}
+\usepackage{colortbl}
+\usepackage{url}
+\usepackage{enumitem}
+\usepackage{multicol}
+\usepackage{ragged2e}
+\usepackage{calc}
+
+% ---- Color Palette ----------------------------------------
+\definecolor{Cprimary}{RGB}{0,62,116}       % Stuttgart dark blue
+\definecolor{Csecondary}{RGB}{0,100,170}    % Medium blue
+\definecolor{Clight}{RGB}{218,235,248}      % Light blue tint
+\definecolor{Cgreen}{RGB}{0,110,84}         % Dark green
+\definecolor{Corange}{RGB}{190,75,0}        % Warm orange (alert)
+\definecolor{Cdark}{RGB}{20,20,30}          % Near-black body text
+\definecolor{Crule}{RGB}{180,200,220}       % Table rule color
+
+% ---- Beamer Theme Setup -----------------------------------
+\usetheme{default}
+\useinnertheme{rectangles}
+\setbeamertemplate{navigation symbols}{}
+\setbeamertemplate{footline}{}
+
+\setbeamercolor{block title}{bg=Csecondary, fg=white}
+\setbeamercolor{block body}{bg=Clight, fg=Cdark}
+\setbeamercolor{block alerted title}{bg=Corange, fg=white}
+\setbeamercolor{block alerted body}{bg=orange!10, fg=Cdark}
+\setbeamercolor{block example title}{bg=Cgreen, fg=white}
+\setbeamercolor{block example body}{bg=green!9, fg=Cdark}
+
+\setbeamerfont{block title}{size=\large, series=\bfseries}
+\setbeamerfont{block body}{size=\normalsize}
+
+% ---- Headline (custom header) -----------------------------
+\setbeamertemplate{headline}{%
+  \begin{beamercolorbox}[wd=\paperwidth, colsep=0pt]{headline}%
+    \begin{tikzpicture}
+      \fill[Cprimary] (0,0) rectangle (\paperwidth, 13cm);
+      \fill[Csecondary!60] (0,0) rectangle (\paperwidth, 0.5cm);
+    \end{tikzpicture}%
+    \vspace{-13.5cm}%
+    \begin{center}
+      {\fontsize{56}{66}\selectfont\bfseries\color{white}%
+        Automated Screening for Cognitive Decline}\\[0.45em]
+      {\fontsize{44}{52}\selectfont\bfseries\color{white!85}%
+        From Picture Descriptions to Algorithms}\\[1.1em]
+      {\fontsize{30}{38}\selectfont\color{white!80}%
+        \textbf{Feixiang Xiao}\enspace\textbar\enspace
+        Introduction to Deep Learning — Bonus Seminar\enspace\textbar\enspace
+        University of Stuttgart, 2025}\\[1.2em]
+    \end{center}
+  \end{beamercolorbox}%
+}
+
+% ---- Layout dimensions ------------------------------------
+\newlength{\postermargin}
+\setlength{\postermargin}{1.8cm}
+\newlength{\colsep}
+\setlength{\colsep}{1.4cm}
+\newlength{\leftcol}
+\newlength{\rightcol}
+\setlength{\leftcol}{0.475\linewidth}
+\setlength{\rightcol}{0.475\linewidth}
+\newlength{\blockskip}
+\setlength{\blockskip}{1.0cm}
+
+% ===========================================================
+\begin{document}
+\begin{frame}[t]
+
+\vspace{1.8cm}
+
+% -----------------------------------------------------------
+% TWO-COLUMN BODY
+% -----------------------------------------------------------
+\begin{columns}[T, totalwidth=\linewidth]
+
+% ===========================================================
+% LEFT COLUMN
+% ===========================================================
+\begin{column}{\leftcol}
+
+% -----------------------------------------------------------
+\begin{block}{1\enspace Motivation}
+\justifying
+\begin{itemize}[leftmargin=1.4em, itemsep=0.35em, topsep=0pt]
+  \item \textbf{57 million} people worldwide live with dementia;
+        Alzheimer's disease (AD) accounts for 60--70\% of cases
+  \item Early detection enables timely intervention and reduces caregiver burden
+  \item Standard tools (MMSE, PET/MRI) are \textbf{expensive,
+        clinician-dependent}, and inaccessible at population scale
+  \item \textbf{Speech} is a non-invasive, low-cost, remotely deployable biomarker
+        that reflects language and cognition simultaneously
+\end{itemize}
+\vspace{0.6em}
+\begin{center}
+\begin{tikzpicture}
+  \node[
+    draw=Cprimary, fill=Cprimary!12, rounded corners=7pt,
+    inner sep=12pt, text width=0.86\textwidth, align=justify
+  ] {
+    \textbf{Research Question:} How well can automated speech-based
+    systems screen for cognitive decline --- and what separates
+    benchmark accuracy from real-world clinical deployment?
+  };
+\end{tikzpicture}
+\end{center}
+\end{block}
+
+\vspace{\blockskip}
+
+% -----------------------------------------------------------
+\begin{block}{2\enspace The Cookie Theft Task}
+\justifying
+Introduced in the \textit{Boston Diagnostic Aphasia Examination}
+(Goodglass \& Kaplan, 1983), the \textbf{Cookie Theft picture
+description task} asks participants to describe a scene in which:
+a child steals cookies from a jar while standing on a tipping stool;
+a woman washes dishes, oblivious to the overflowing sink.
+
+\vspace{0.5em}
+\noindent The task elicits \textbf{spontaneous connected speech},
+revealing characteristic patterns of cognitive decline:
+
+\begin{itemize}[leftmargin=1.4em, itemsep=0.25em, topsep=0.3em]
+  \item Word-finding difficulties and circumlocutions
+  \item Reduced syntactic complexity and sentence length
+  \item Missing information units (IUs) and topic repetition
+  \item Increased disfluency, hesitations, and pause frequency
+\end{itemize}
+
+\vspace{0.6em}
+\begin{center}
+\renewcommand{\arraystretch}{1.35}
+\begin{tabular}{@{}p{0.38\textwidth} p{0.56\textwidth}@{}}
+  \toprule
+  \rowcolor{Cprimary!15}
+  \textbf{Resource} & \textbf{Description} \\
+  \midrule
+  DementiaBank / Pitt Corpus
+    & 208 AD + 104 HC; longitudinal recordings
+      (Becker et al., 1994) \\
+  ADReSS Challenge
+    & 78 AD + 78 HC; age/gender-balanced,
+      acoustically pre-processed benchmark
+      (Luz et al., 2020) \\
+  ADReSSo Challenge
+    & Speech-only variant; adds longitudinal
+      decline prediction task
+      (Luz et al., 2021) \\
+  ADReSS-M (ICASSP 2023)
+    & Cross-lingual: trained on English,
+      tested on Greek
+      (Luz et al., 2024) \\
+  \bottomrule
+\end{tabular}
+\end{center}
+\end{block}
+
+\vspace{\blockskip}
+
+% -----------------------------------------------------------
+\begin{block}{3\enspace Processing Pipeline}
+\vspace{0.4em}
+\begin{center}
+\begin{tikzpicture}[
+  node distance = 0pt,
+  box/.style = {
+    draw = Csecondary, fill = Clight,
+    rounded corners = 6pt,
+    minimum width  = 5.2cm,
+    minimum height = 1.6cm,
+    text width     = 4.8cm,
+    align = center,
+    font = \small\bfseries\color{Cdark}
+  },
+  mainbox/.style = {
+    box,
+    fill  = Cprimary!18,
+    draw  = Cprimary
+  },
+  outbox/.style = {
+    box,
+    fill  = Cgreen!20,
+    draw  = Cgreen
+  },
+  featurebox/.style = {
+    box,
+    minimum width  = 4.6cm,
+    text width     = 4.2cm
+  },
+  arr/.style = {
+    -{Latex[length=9pt, width=6pt]},
+    line width = 2.2pt,
+    color = Csecondary
+  },
+  darr/.style = {
+    arr,
+    color = Cprimary
+  },
+  lbl/.style = {
+    font = \scriptsize\itshape,
+    text = Cdark,
+    align = center
+  }
+]
+
+% Nodes
+\node[mainbox] (audio) {Speech\\Recording};
+
+\node[mainbox, right=3.2cm of audio] (asr)
+  {ASR /\\Feature Extraction};
+
+\node[featurebox, above right=0.9cm and 2.8cm of asr] (acou)
+  {Acoustic\\Features};
+
+\node[featurebox, below right=0.9cm and 2.8cm of asr] (ling)
+  {Linguistic\\Features};
+
+\node[mainbox, right=2.8cm of asr, yshift=0cm] (clf)
+  {ML Classifier};
+
+\node[outbox, right=2.8cm of clf] (out)
+  {Screening\\Decision};
+
+% Arrows
+\draw[darr] (audio) -- (asr);
+\draw[darr] (asr.east) -- ++(1.2,0) |- (acou.west);
+\draw[darr] (asr.east) -- ++(1.2,0) |- (ling.west);
+\draw[darr] (acou.east) -| (clf.north);
+\draw[darr] (ling.east) -| (clf.south);
+\draw[darr] (clf) -- (out);
+
+% Labels under feature nodes
+\node[lbl, below=0.18cm of acou]
+  {eGeMAPS, prosody,\\pauses, disfluency};
+\node[lbl, above=0.18cm of ling]
+  {TTR, syntax, IUs,\\BERT embeddings};
+\node[lbl, below=0.22cm of out]
+  {\textbf{AD} / \textbf{HC}};
+
+\end{tikzpicture}
+\end{center}
+\vspace{0.3em}
+\end{block}
+
+\end{column}
+
+% ===========================================================
+% COLUMN SEPARATOR
+% ===========================================================
+\begin{column}{\colsep}\end{column}
+
+% ===========================================================
+% RIGHT COLUMN
+% ===========================================================
+\begin{column}{\rightcol}
+
+% -----------------------------------------------------------
+\begin{block}{4\enspace Feature Extraction Approaches}
+\justifying
+Three complementary feature streams are used in the literature:
+
+\vspace{0.5em}
+\renewcommand{\arraystretch}{1.4}
+\begin{tabular}{@{}>{\bfseries}p{0.22\textwidth} p{0.72\textwidth}@{}}
+  \toprule
+  \rowcolor{Cprimary!12}
+  Stream & Key Features and Methods \\
+  \midrule
+  Acoustic
+    & eGeMAPS (88 features: F0, energy, spectral flux, voice quality,
+      MFCCs); pause duration and position; disfluency rate;
+      speech rate; self-supervised representations
+      (wav2vec\,2.0, Whisper) \\
+  Linguistic / NLP
+    & Type-token ratio (TTR), part-of-speech distribution,
+      syntactic depth, information unit (IU) coverage,
+      semantic coherence; fine-tuned BERT / RoBERTa
+      on ASR transcripts \\
+  Multimodal
+    & Late fusion of acoustic + NLP (Martinc \& Pollak, 2020);
+      joint BiLSTM over text, disfluency \& pause tokens
+      (Rohanian et al., 2021); end-to-end WavBERT
+      (Zhu et al., 2021) \\
+  Graph-based
+    & Spatio-semantic scene graphs capturing \emph{which} objects
+      are mentioned and \emph{how} they are spatially related
+      (Ambadi et al., 2021) \\
+  \bottomrule
+\end{tabular}
+\end{block}
+
+\vspace{\blockskip}
+
+% -----------------------------------------------------------
+\begin{block}{5\enspace Benchmark Performance}
+\justifying
+Results on the ADReSS / ADReSSo test sets (AD classification accuracy):
+
+\vspace{0.5em}
+\renewcommand{\arraystretch}{1.45}
+\begin{tabular}{@{}p{0.44\textwidth} p{0.28\textwidth} >{\centering\arraybackslash}p{0.16\textwidth}@{}}
+  \toprule
+  \rowcolor{Cprimary!12}
+  \textbf{System} & \textbf{Method} & \textbf{Acc.} \\
+  \midrule
+  Fraser et al.\ (2016)             & 370 linguistic feat.\ + SVM        & 81.9\% \\
+  Luz et al.\ (2020) — baseline     & eGeMAPS acoustic                   & 62.5\% \\
+  Balagopalan et al.\ (2020)        & Fine-tuned BERT                    & $\sim$83\% \\
+  Martinc \& Pollak (2020)          & TF-IDF + acoustic fusion           & 81.3\% \\
+  Rohanian et al.\ (2021)           & Multimodal BiLSTM                  & 84.0\% \\
+  Zhu et al.\ (2021) WavBERT        & wav2vec\,2 + BERT + pause embed.   & 83.1\% \\
+  \rowcolor{Cprimary!20}
+  \textbf{ADReSS-M top} (2024)      & wav2vec\,2 / Whisper               & \textbf{87.0\%} \\
+  \bottomrule
+\end{tabular}
+
+\vspace{0.5em}
+\noindent Performance rose from 62.5\% (acoustic baseline, 2020) to
+\textbf{87\%} (self-supervised end-to-end, 2024) --- a 24.5 pp gain
+over four years of shared-task competition.
+\end{block}
+
+\vspace{\blockskip}
+
+% -----------------------------------------------------------
+\begin{alertblock}{6\enspace The Reality Gap}
+\justifying
+\begin{itemize}[leftmargin=1.4em, itemsep=0.35em, topsep=0pt]
+  \item \textbf{Small datasets:} DementiaBank has $\approx$300 unique
+        speakers --- far too few for robust population-level generalization
+  \item \textbf{Cross-corpus drop:} ADReSS-M (Luz et al., 2024) trained
+        on English, tested on Greek $\rightarrow$ baseline accuracy
+        \textbf{drops to 73.9\%}
+  \item \textbf{Label noise:} MMSE scores are coarse, examiner-variable
+        proxies for dementia stage
+  \item \textbf{Demographic under-coverage:} age, education level, accent,
+        and language diversity are poorly controlled
+  \item \textbf{Artifact learning:} Guo et al.\ (2021) show BERT can learn
+        dataset-specific cues; Favaro et al.\ (2024) attempt to isolate
+        invariant cognitive markers
+\end{itemize}
+\end{alertblock}
+
+\vspace{\blockskip}
+
+% -----------------------------------------------------------
+\begin{exampleblock}{7\enspace Critical Reflection}
+\justifying
+\begin{itemize}[leftmargin=1.4em, itemsep=0.35em, topsep=0pt]
+  \item \textbf{Accuracy $\neq$ clinical validity:} no prospective
+        trials on undiagnosed community populations exist to date
+  \item \textbf{Interpretability:} which speech features are
+        \emph{genuinely} diagnostic vs.\ spuriously correlated with
+        age, education, or recording conditions?
+  \item \textbf{Ethical stakes:} false positives carry social and
+        psychological consequences; fairness across demographics is
+        under-studied
+  \item \textbf{Path forward:} larger multilingual corpora, inherently
+        interpretable architectures, and prospective clinical validation
+        are the three critical bottlenecks
+\end{itemize}
+\end{exampleblock}
+
+\end{column}
+\end{columns}
+
+% ===========================================================
+% FULL-WIDTH CONCLUSIONS
+% ===========================================================
+\vspace{1.2cm}
+
+\begin{beamercolorbox}[
+  wd=\linewidth,
+  sep=0.7cm,
+  rounded=true,
+  shadow=false
+]{block body}
+  {\large\bfseries\color{Cprimary} Conclusions}\quad
+  Speech-based cognitive decline screening has matured from
+  hand-crafted linguistic features to self-supervised end-to-end
+  models, with ADReSS benchmark accuracy reaching 87\%.
+  Yet cross-corpus experiments reveal substantial generalization
+  failures, and no large-scale prospective clinical validation
+  exists.
+  Closing the gap demands diverse multilingual datasets,
+  interpretable model outputs, and rigorous clinical trial design ---
+  not merely higher benchmark numbers.
+\end{beamercolorbox}
+
+% ===========================================================
+% REFERENCES
+% ===========================================================
+\vspace{0.9cm}
+
+\begin{block}{References}
+\footnotesize\setlength{\columnsep}{2cm}
+\begin{multicols}{2}
+\begin{itemize}[leftmargin=0pt, label={}, itemsep=0.18em]
+  \item Ambadi, P.\,S., et al. (2021). Spatio-semantic graphs from
+        picture description: applications to detection of cognitive
+        impairment. \textit{Frontiers in Neurology}, 12, 795374.
+        \url{https://doi.org/10.3389/fneur.2021.795374}
+
+  \item Balagopalan, A., Eyre, B., Rudzicz, F., \& Novikova, J.
+        (2020). To BERT or not to BERT: Comparing speech and
+        language-based approaches for Alzheimer's disease detection.
+        \textit{Proc.\ Interspeech 2020}, 2167--2171.
+        \url{https://doi.org/10.21437/Interspeech.2020-2557}
+
+  \item Becker, J.\,T., et al. (1994). The natural history of
+        Alzheimer's disease. \textit{Archives of Neurology},
+        51(6), 585--594.
+        \url{https://doi.org/10.1001/archneur.1994.00540180063015}
+
+  \item Favaro, A., et al. (2024). Discovering invariant patterns of
+        cognitive decline via an automated analysis of the Cookie
+        Thief picture description task. \textit{Proc.\ Odyssey 2024},
+        201--208.
+        \url{https://doi.org/10.21437/Odyssey.2024-29}
+
+  \item Fraser, K.\,C., Meltzer, J.\,A., \& Rudzicz, F. (2016).
+        Linguistic features identify Alzheimer's disease in narrative
+        speech. \textit{Journal of Alzheimer's Disease}, 49(2),
+        407--422.
+        \url{https://doi.org/10.3233/JAD-150520}
+
+  \item Guo, Y., et al. (2021). Crossing the ``Cookie Theft'' corpus
+        chasm: Applying what BERT learns from outside data to the
+        ADReSS challenge dementia detection task.
+        \textit{Frontiers in Computer Science}, 3, 642517.
+        \url{https://doi.org/10.3389/fcomp.2021.642517}
+
+  \item Luz, S., et al. (2020). Alzheimer's dementia recognition
+        through spontaneous speech: The ADReSS challenge.
+        \textit{Proc.\ Interspeech 2020}, 2172--2176.
+        \url{https://doi.org/10.21437/Interspeech.2020-2571}
+
+  \item Luz, S., et al. (2021). Detecting cognitive decline using
+        speech only: The ADReSSo challenge.
+        \textit{Proc.\ Interspeech 2021}, 3780--3784.
+        \url{https://doi.org/10.21437/Interspeech.2021-1220}
+
+  \item Luz, S., et al. (2024). An overview of the ADReSS-M Signal
+        Processing Grand Challenge on Multilingual Alzheimer's
+        Dementia Recognition Through Spontaneous Speech.
+        \textit{IEEE Open Journal of Signal Processing}, 5, 738--749.
+        \url{https://doi.org/10.1109/ojsp.2024.3378595}
+
+  \item Rohanian, M., Hough, J., \& Purver, M. (2021). Alzheimer's
+        dementia recognition using acoustic, lexical, disfluency and
+        speech pause features robust to noisy inputs.
+        \textit{Proc.\ Interspeech 2021}, 3820--3824.
+        \url{https://doi.org/10.21437/Interspeech.2021-1633}
+
+  \item Zhu, Y., et al. (2021). WavBERT: Exploiting semantic and
+        non-semantic speech using Wav2vec and BERT for dementia
+        detection. \textit{Proc.\ Interspeech 2021}.
+        \url{https://doi.org/10.21437/Interspeech.2021-332}
+\end{itemize}
+\end{multicols}
+\end{block}
+
+\end{frame}
+\end{document}

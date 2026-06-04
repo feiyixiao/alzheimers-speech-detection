@@ -1,0 +1,317 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Cognitive Decline Screening — Paper Comparison</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', Arial, sans-serif;
+      font-size: 12.5px;
+      margin: 24px;
+      color: #1a1a1a;
+      background: #fff;
+    }
+    h2 {
+      color: #003d7a;
+      margin-bottom: 6px;
+    }
+    .subtitle {
+      color: #555;
+      font-size: 12px;
+      margin-bottom: 14px;
+    }
+    .legend {
+      margin-bottom: 14px;
+      font-size: 12px;
+      display: flex;
+      align-items: center;
+      gap: 20px;
+    }
+    .legend-chip {
+      display: inline-block;
+      background: #FFFDE7;
+      border: 1px solid #e0c940;
+      padding: 2px 10px;
+      border-radius: 4px;
+    }
+    .table-wrap {
+      overflow-x: auto;
+    }
+    table {
+      border-collapse: collapse;
+      width: 100%;
+      min-width: 1900px;
+    }
+    th, td {
+      border: 1px solid #ccc;
+      padding: 7px 9px;
+      vertical-align: top;
+      line-height: 1.45;
+    }
+    thead tr:first-child th {
+      background-color: #003d7a;
+      color: #fff;
+      text-align: center;
+      font-size: 12px;
+      letter-spacing: 0.02em;
+    }
+    thead tr:nth-child(2) th {
+      background-color: #1a5fa8;
+      color: #fff;
+      font-weight: normal;
+      font-size: 11.5px;
+      text-align: center;
+    }
+    tbody tr { background-color: #fff; }
+    tbody tr:nth-child(odd) { background-color: #f7f9fc; }
+    tr.teacher,
+    tr.teacher:nth-child(odd) {
+      background-color: #FFFDE7 !important;
+    }
+    td b { color: #003d7a; }
+    .src { font-size: 17px; text-align: center; }
+    .yes  { color: #1b5e20; font-weight: bold; }
+    .part { color: #bf360c; }
+    .no   { color: #b71c1c; }
+    .era-old { color: #6d4c41; font-size: 11.5px; }
+    .era-mid { color: #1565c0; font-size: 11.5px; }
+    .era-new { color: #1b5e20; font-size: 11.5px; }
+    .warn { color: #b71c1c; font-weight: bold; }
+    ul { margin: 3px 0; padding-left: 15px; }
+    li { margin-bottom: 2px; }
+    .footer {
+      margin-top: 16px;
+      font-size: 11px;
+      color: #777;
+      border-top: 1px solid #ddd;
+      padding-top: 8px;
+    }
+  </style>
+</head>
+<body>
+
+<h2>Automated Screening for Cognitive Decline: Paper Comparison Table</h2>
+<p class="subtitle">Topic 8 · Introduction to Deep Learning — Bonus Seminar · University of Stuttgart · 2025</p>
+
+<div class="legend">
+  <span><b>Source:</b> &nbsp;🍎 Given by instructor &nbsp;|&nbsp; 👥 Found by teammate &nbsp;|&nbsp; 🔍 Suggested addition</span>
+  <span class="legend-chip">🟡 Yellow background = instructor's paper</span>
+  <span><b>Q coverage:</b> <span class="yes">✅ strong</span> &nbsp;|&nbsp; <span class="part">⚠️ partial</span> &nbsp;|&nbsp; <span class="no">❌ not addressed</span></span>
+</div>
+
+<div class="table-wrap">
+<table>
+  <thead>
+    <tr>
+      <th rowspan="2" style="min-width:130px">Paper</th>
+      <th rowspan="2" style="min-width:30px">Src</th>
+      <!-- Dataset -->
+      <th colspan="5">Dataset</th>
+      <!-- Task -->
+      <th colspan="2">Task</th>
+      <!-- Methods -->
+      <th colspan="4">Methods</th>
+      <!-- Results -->
+      <th colspan="2">Design &amp; Results</th>
+      <!-- Gap -->
+      <th rowspan="2" style="min-width:200px">Key Generalization Limitations</th>
+      <!-- 3 Qs -->
+      <th colspan="3">Instructor's 3 Questions</th>
+    </tr>
+    <tr>
+      <th style="min-width:130px">Dataset</th>
+      <th style="min-width:80px">N (speakers)</th>
+      <th style="min-width:130px">Class Distribution</th>
+      <th style="min-width:70px">Language</th>
+      <th style="min-width:150px">Speech Task(s)</th>
+      <th style="min-width:120px">Classification</th>
+      <th style="min-width:110px">Additional Task</th>
+      <th style="min-width:120px">Feature Type</th>
+      <th style="min-width:220px">Key Features</th>
+      <th style="min-width:180px">Model</th>
+      <th style="min-width:90px">Method Era</th>
+      <th style="min-width:140px">Evaluation Protocol</th>
+      <th style="min-width:180px">Best Result</th>
+      <th style="min-width:140px">① How well does it work?</th>
+      <th style="min-width:160px">② What do models pick up on?</th>
+      <th style="min-width:150px">③ Benchmark vs. real-world gap?</th>
+    </tr>
+  </thead>
+  <tbody>
+
+    <!-- ── Fraser 2016 ── -->
+    <tr>
+      <td><b>Fraser et al. (2016)</b></td>
+      <td class="src">🔍</td>
+      <td>DementiaBank / Pitt Corpus</td>
+      <td>264 speakers<br>(473 samples)</td>
+      <td>167 AD · 97 HC</td>
+      <td>English</td>
+      <td>Cookie Theft only</td>
+      <td>Binary (AD vs HC)</td>
+      <td>—</td>
+      <td>Linguistic + Acoustic<br><span class="era-old">(hand-crafted)</span></td>
+      <td>370 features: POS ratios, syntactic complexity, TTR, Brunet's index, information units, MFCCs, repetition cosine distance</td>
+      <td>Logistic regression + Pearson correlation feature selection (370 → 35)</td>
+      <td class="era-old">🕰️ Classical NLP</td>
+      <td>10-fold CV, speaker-independent</td>
+      <td>Accuracy: <b>81.9%</b> (top-35 features)</td>
+      <td><ul><li>No age/gender balancing</li><li>English only, single dataset</li><li>Best result needs manual transcription</li><li>No cross-corpus test</li></ul></td>
+      <td class="yes">✅ 81.9% — strongest hand-crafted result; shows even 35 features suffice</td>
+      <td class="yes">✅✅ Factor analysis identifies 4 interpretable dimensions: semantic, acoustic, syntactic, information impairment</td>
+      <td class="no">❌ Not discussed</td>
+    </tr>
+
+    <!-- ── Luz 2020 ── -->
+    <tr>
+      <td><b>Luz et al. (2020)</b><br><i>ADReSS Challenge</i></td>
+      <td class="src">🔍</td>
+      <td>DementiaBank / Pitt (balanced subset)</td>
+      <td><b>156</b><br>(78 AD + 78 HC)</td>
+      <td>78 AD · 78 HC<br><i>(age &amp; gender matched)</i></td>
+      <td>English</td>
+      <td>Cookie Theft only</td>
+      <td>Binary (AD vs HC)</td>
+      <td>MMSE score regression</td>
+      <td>Acoustic (hand-crafted) + Linguistic (CLAN)</td>
+      <td>eGeMAPS (88), ComParE (6,373), emobase (988), MRCG (6,912), Minimal (13), 34 CLAN linguistic measures (TTR, MLU, POS %)</td>
+      <td>LDA, DT, SVM, RF, 1NN — segment-level + majority vote</td>
+      <td class="era-old">🕰️ Classical baseline</td>
+      <td>LOSO + held-out test set, fully speaker-independent</td>
+      <td>Acoustic: <b>62.5%</b><br>Linguistic: <b>75.0%</b><br>MMSE RMSE: 6.14 (acoustic) / 5.20 (linguistic)</td>
+      <td><ul><li>Small N; linguistic baseline needs manual transcripts</li><li>Prior studies inflated accuracy with unbalanced data and non-speaker-independent splits</li><li>Binary only; English only</li></ul></td>
+      <td class="yes">✅ Establishes field-wide reference baseline; all later work reports against these numbers</td>
+      <td class="part">⚠️ Features listed but not analyzed for meaning</td>
+      <td class="yes">✅ Shows prior accuracy was inflated; raises standardization problem explicitly</td>
+    </tr>
+
+    <!-- ── Ambadi 2021 — TEACHER ── -->
+    <tr class="teacher">
+      <td><b>Ambadi et al. (2021)</b></td>
+      <td class="src">🍎</td>
+      <td>DementiaBank / Pitt Corpus</td>
+      <td>~312</td>
+      <td>AD vs HC</td>
+      <td>English</td>
+      <td>Cookie Theft only</td>
+      <td>Binary (AD vs HC)</td>
+      <td>Severity prediction</td>
+      <td>Structural NLP<br><span class="era-mid">(graph-based)</span></td>
+      <td>Spatio-semantic graphs: spatial relations between Cookie Theft scene objects + semantic links between mentioned entities</td>
+      <td>Graph Neural Network (GNN)</td>
+      <td class="era-mid">🔄 Structured deep learning</td>
+      <td>Standard train/test split on DementiaBank</td>
+      <td>Competitive with SOTA on DementiaBank (F1 / AUC)</td>
+      <td><ul><li>Single dataset; English only; binary only</li><li>Graph depends on Cookie Theft scene — not transferable to other tasks</li><li>No cross-corpus validation</li></ul></td>
+      <td class="yes">✅ Competitive accuracy; graph structure adds richer scene representation</td>
+      <td class="yes">✅ Graph captures <i>what</i> is described and <i>how</i> objects are spatially related — interpretable</td>
+      <td class="part">⚠️ Limited discussion of generalization</td>
+    </tr>
+
+    <!-- ── Favaro 2024 — TEACHER ── -->
+    <tr class="teacher">
+      <td><b>Favaro et al. (2024)</b></td>
+      <td class="src">🍎</td>
+      <td>DementiaBank / Pitt Corpus</td>
+      <td>~312</td>
+      <td>AD vs HC</td>
+      <td>English</td>
+      <td>Cookie Theft only</td>
+      <td>Binary (AD vs HC)</td>
+      <td>Invariant pattern discovery</td>
+      <td>Acoustic<br><span class="era-new">(self-supervised)</span></td>
+      <td>Self-supervised acoustic embeddings; causal / invariant risk minimization framework across data partitions</td>
+      <td>Invariant learning / causal inference model</td>
+      <td class="era-new">🆕 Interpretable AI</td>
+      <td>Cross-split invariance testing across DementiaBank partitions</td>
+      <td>Accuracy secondary; focus on patterns that hold across splits (invariant) vs. those that don't (artifacts)</td>
+      <td><ul><li>Single task (Cookie Theft); single language</li><li>DementiaBank only — invariant patterns still untested cross-corpus</li><li>Framework complexity limits reproducibility</li></ul></td>
+      <td class="part">⚠️ Accuracy not the primary focus</td>
+      <td class="yes">✅✅ Central question of paper: which acoustic patterns are genuine biomarkers vs. dataset-specific spurious correlations?</td>
+      <td class="yes">✅ Cross-split instability directly reveals where generalization breaks</td>
+    </tr>
+
+    <!-- ── Botelho 2024 ── -->
+    <tr>
+      <td><b>Botelho et al. (2024)</b><br><i>PROCESS Challenge</i></td>
+      <td class="src">👥</td>
+      <td>PROCESS 2024</td>
+      <td><b>157</b><br>(116 train + 41 dev)</td>
+      <td>82 HC · 59 MCI · <span class="warn">16 Dementia</span></td>
+      <td>English</td>
+      <td>Cookie Theft · Phonemic Fluency (P) · Semantic Fluency (animals)</td>
+      <td><b>3-class</b> (HC / MCI / Dementia)</td>
+      <td>—</td>
+      <td>Multimodal — 205 systems</td>
+      <td>eGeMAPS · ComParE · Praat · pause features (11) · ECAPA-TDNN · TRILLsson · BERT · RoBERTa · LongFormer · <b>LLaMA-3.1-70B</b> macrodescriptors (memory, coherence, topic drift)</td>
+      <td>SVM · DT · RF · Fuzzy Fingerprints → late-fusion ensemble (~10,000 combinations explored)</td>
+      <td class="era-new">🆕 LLM + ensemble</td>
+      <td>Official PROCESS held-out test set</td>
+      <td>Dev UAF1: <b>67.4%</b><br>Test UAF1: <b>59.34%</b><br><span class="warn">Most individual systems: 0% F1 on dementia class</span></td>
+      <td><ul><li>Only 12 dementia training examples</li><li>Age distribution shifts between train/dev partitions</li><li>No cross-corpus or cross-language test</li><li>Ensemble is uninterpretable black box</li></ul></td>
+      <td class="yes">✅ Most comprehensive method comparison in set (205 systems)</td>
+      <td class="no">❌ No interpretability analysis</td>
+      <td class="yes">✅✅ Small data + class imbalance + partition shift all illustrated quantitatively</td>
+    </tr>
+
+    <!-- ── Chi 2025 ── -->
+    <tr>
+      <td><b>Chi et al. (2025)</b><br><i>PROCESS Challenge</i></td>
+      <td class="src">👥</td>
+      <td>PROCESS 2025<br><span class="warn">⚠️ same corpus as Botelho</span></td>
+      <td><b>157</b></td>
+      <td>82 HC · 59 MCI · <span class="warn">16 Dementia</span></td>
+      <td>English</td>
+      <td>Cookie Theft · Phonemic Fluency · Semantic Fluency</td>
+      <td><b>3-class</b> (HC / MCI / Dementia)</td>
+      <td>MMSE regression</td>
+      <td>Multimodal</td>
+      <td>eGeMAPS · DisVoice prosody · <b>Whisper</b> encoder embeddings · <b>RoBERTa</b> text embeddings</td>
+      <td>Two-tier SVM (Dementia vs. rest → HC vs. MCI); CNN + XGBoost; SVR (regression); SMOTE for imbalance</td>
+      <td class="era-new">🆕 Pre-trained models</td>
+      <td>5-fold CV + official PROCESS test set</td>
+      <td>Macro-F1: <b>0.577</b> (rank 15/37)<br>MMSE RMSE: <b>2.77</b> (rank 7/37)<br><span class="warn">Zero dementia predictions in best model</span></td>
+      <td><ul><li>Same 157-person dataset as Botelho et al.</li><li>Deep learning overfits on small N</li><li>Zero dementia predictions despite SMOTE</li><li>No demographic features; English only</li></ul></td>
+      <td class="yes">✅ Challenge ranking shows relative positioning; two-tier approach is a novel design choice</td>
+      <td class="no">❌ Not analyzed</td>
+      <td class="yes">✅ Zero dementia predictions = failure to generalize to the minority class in real screening</td>
+    </tr>
+
+    <!-- ── Zolnoori 2025 ── -->
+    <tr>
+      <td><b>Zolnoori et al. (2025)</b><br><i>NIA PREPARE / SpeechCARE</i></td>
+      <td class="src">👥</td>
+      <td>NIA PREPARE Challenge</td>
+      <td><b>2,058</b></td>
+      <td>1,140 HC · 268 MCI · 650 AD</td>
+      <td>English (1,655)<br>Spanish (360)<br>Mandarin (43)</td>
+      <td>Picture description · Sentence reading · Story recall · Voice command</td>
+      <td><b>3-class</b> (HC / MCI / AD)</td>
+      <td>Fairness / bias analysis &amp; mitigation</td>
+      <td>Multimodal + multilingual large models</td>
+      <td><b>mHuBERT</b> (multilingual acoustic) · <b>mGTE</b> (multilingual text) · age one-hot · <b>LLaMA-405B</b> for data QA &amp; task identification</td>
+      <td>Adaptive Gating Fusion (AGF, MoE-style dynamic weighting); adversarial debiasing; frequency masking; voice conversion augmentation</td>
+      <td class="era-new">🆕 Multilingual large models</td>
+      <td>Official NIA PREPARE held-out test set</td>
+      <td>3-class: AUC = <b>0.87</b>, F1 = <b>0.72</b><br>MCI vs HC: AUC = <b>0.90</b><br>Bias mitigation: +5–16% Equality of Opportunity for underrepresented groups</td>
+      <td><ul><li>All Mandarin speakers have MCI → language acts as proxy label</li><li>All Spanish speakers did sentence reading only → task-type confound</li><li>92.6% race data missing</li><li>No longitudinal data; 62.4% audio severely noisy</li></ul></td>
+      <td class="yes">✅ Largest-scale result in set; multilingual models outperform monolingual even for English</td>
+      <td class="part">⚠️ Limited; bias analysis reveals language used as proxy label rather than genuine biomarker</td>
+      <td class="yes">✅✅ Cross-language artifact; task-type confound; demographic bias quantified and partially mitigated</td>
+    </tr>
+
+  </tbody>
+</table>
+</div>
+
+<p class="footer">
+  Generated for: <b>Automated screening for cognitive decline — from picture descriptions to algorithms</b><br>
+  Course: Introduction to Deep Learning, Bonus Seminar · University of Stuttgart · 2025 &nbsp;|&nbsp;
+  <b>Instructor's 3 questions:</b>
+  ① How well does the approach work? &nbsp;
+  ② What are models picking up on? &nbsp;
+  ③ What is the gap between benchmark performance and real-world screening?
+</p>
+
+</body>
+</html>
