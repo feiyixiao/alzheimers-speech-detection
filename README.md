@@ -14,10 +14,10 @@ raw .wav
 Acoustic feature extraction (librosa)
     MFCC × 40 (mean + std)
     Delta MFCC (mean + std)
-    Pitch F0 (mean, std, min, max)
+    Pitch F0 (mean, std, min, max, range)
     RMS energy (mean, std)
     Speech rate (voiced frame ratio)
-    → 167-dim feature vector per utterance
+    → 168-dim feature vector per utterance
     ↓
 StandardScaler
     ↓
@@ -27,7 +27,7 @@ StandardScaler
     Random Forest
     MLP
     ↓
-5-fold cross-validation → Accuracy / F1 / AUC
+5-fold speaker-grouped cross-validation → Accuracy / F1 / AUC
 ```
 
 This approach follows the feature-based tradition established by Fraser et al. (2016), who achieved 81.9% accuracy on DementiaBank using handcrafted linguistic and acoustic features.
@@ -70,26 +70,38 @@ pip install -r requirements.txt
 python data/demo/generate_demo.py
 python train.py
 
-# Real data (after obtaining ADReSS)
-python train.py --audio_dir data/adress/audio --labels data/adress/labels.csv
+# Real data (Pitt Cookie Theft copy, speaker-grouped CV)
+python data/make_pitt_labels.py --root /path/to/pitt_cookie
+python train.py --audio_dir /path/to/pitt_cookie --labels data/adress/labels.csv --n_jobs 8
 ```
 
-Results are saved to `results/scores.csv`.
+Results are saved to `results/scores.csv` (`--cv naive` writes `scores_naive.csv`).
 
 ---
 
-## Results (ADReSS 2020, 5-fold CV)
+## Results (Pitt Cookie Theft, speaker-grouped 5-fold CV)
 
-*To be filled in once DementiaBank access is obtained.*
+**Data actually used:** the full Pitt Cookie Theft set from DementiaBank, *not* the ADReSS 2020 subset. 498 recordings from 267 speakers (AD 255 recordings / 168 speakers, HC 243 / 99). AD = ProbableAD + PossibleAD; MCI, Vascular, Memory and unlabelled dementia recordings are excluded. Labels are built by `data/make_pitt_labels.py`.
+
+**CV:** `StratifiedGroupKFold`, speaker ID (filename prefix, e.g. `001` from `001-0`) as group, so all visits of one person are in the same fold. Mean over 5 folds, all 168 features.
 
 | Model | Accuracy | F1 | AUC |
 |---|---|---|---|
-| Logistic Regression | — | — | — |
-| SVM (RBF) | — | — | — |
-| Random Forest | — | — | — |
-| MLP | — | — | — |
+| Logistic Regression | 0.652 ± 0.047 | 0.658 | 0.708 ± 0.048 |
+| SVM (RBF) | 0.672 ± 0.048 | 0.656 | 0.733 ± 0.050 |
+| Random Forest | 0.674 ± 0.060 | 0.665 | 0.731 ± 0.045 |
+| MLP | 0.637 ± 0.022 | 0.650 | 0.698 ± 0.045 |
 
-For reference: Fraser et al. (2016) reported 81.9% accuracy; top ADReSS 2020 systems reached ~83%.
+Differences between models are within one standard deviation, so no model is clearly best.
+
+Feature ablation (SVM): MFCC 0.679 acc / 0.731 AUC, pitch 0.644 / 0.679, energy + speech rate 0.516 / 0.559, all 0.672 / 0.733.
+
+**Speaker leakage check.** Splitting by recording instead (`--cv naive`, old behaviour) gives slightly higher numbers (SVM 0.687 acc / 0.751 AUC; RF 0.683 / 0.754), because visits of the same speaker end up in both train and test. Grouped CV is the number to report.
+
+**Caveats**
+- Features are computed on the whole recording, so the investigator's voice is included, not only the participant's (the `.cha` timestamps could be used to cut it out).
+- Not comparable one-to-one with Fraser et al. (2016, 81.9%, which also used linguistic features) or ADReSS 2020 systems (~83%, official train/test split with age and gender matching). Here, age and gender are not controlled.
+- Single run, `random_state=42`, no hyper-parameter tuning.
 
 ---
 
@@ -98,9 +110,9 @@ For reference: Fraser et al. (2016) reported 81.9% accuracy; top ADReSS 2020 sys
 ```
 ├── src/
 │   ├── features.py     # librosa feature extraction
-│   ├── dataset.py      # load audio + labels → numpy arrays
+│   ├── dataset.py      # load audio + labels (+ speaker ids) → numpy arrays
 │   └── models.py       # four sklearn classifiers
-├── train.py            # training + cross-validation
+├── train.py            # training + speaker-grouped cross-validation
 ├── notebooks/
 │   └── explore.ipynb   # feature visualisation + results
 ├── data/

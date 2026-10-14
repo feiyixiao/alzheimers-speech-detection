@@ -1,27 +1,38 @@
 import os
 import numpy as np
 import pandas as pd
+from joblib import Parallel, delayed
 from tqdm import tqdm
 from src.features import extract, GROUPS
 
 LABEL_MAP = {"AD": 1, "HC": 0}
 
 
-def load_dataset(audio_dir: str, labels_csv: str):
+def load_dataset(audio_dir: str, labels_csv: str, return_speakers: bool = False, n_jobs: int = 1):
+    """Extract features for every row of labels.csv.
+
+    labels.csv needs `uttid,label`; an optional `speaker` column is returned
+    when return_speakers=True so that CV can keep one speaker's recordings together.
+    """
     df = pd.read_csv(labels_csv)
-    rows = {g: [] for g in GROUPS}
-    y, ids = [], []
-
-    for _, row in tqdm(df.iterrows(), total=len(df), desc="extracting features"):
+    keep = []
+    for i, row in df.iterrows():
         wav_path = os.path.join(audio_dir, row["uttid"])
-        if not os.path.exists(wav_path):
+        if os.path.exists(wav_path):
+            keep.append(i)
+        else:
             print(f"  skip: {wav_path}")
-            continue
-        feats = extract(wav_path)
-        for g in GROUPS:
-            rows[g].append(feats[g])
-        y.append(LABEL_MAP[row["label"]])
-        ids.append(row["uttid"])
+    df = df.loc[keep].reset_index(drop=True)
 
-    X_groups = {g: np.array(rows[g]) for g in GROUPS}
-    return X_groups, np.array(y), ids
+    paths = [os.path.join(audio_dir, u) for u in df["uttid"]]
+    feats = Parallel(n_jobs=n_jobs)(
+        delayed(extract)(p) for p in tqdm(paths, desc="extracting features"))
+
+    X_groups = {g: np.array([f[g] for f in feats]) for g in GROUPS}
+    y = df["label"].map(LABEL_MAP).to_numpy()
+    ids = df["uttid"].tolist()
+
+    if return_speakers:
+        speakers = df["speaker"].astype(str).to_numpy() if "speaker" in df else np.array(ids)
+        return X_groups, y, ids, speakers
+    return X_groups, y, ids
